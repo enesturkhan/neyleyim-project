@@ -9,7 +9,6 @@ export const brand = {
 } as const;
 
 export const mainNavigation: NavigationItem[] = [
-  { label: "Ana Sayfa", href: "/" },
   { label: "Hakkımızda", href: "/hakkimizda" },
   { label: "Programlar", href: "/programlar" },
   { label: "İletişim", href: "/#iletisim" },

@@ -11,7 +11,6 @@ import {
   mainNavigation,
   socialLinks,
 } from "./navigation.config";
-import { WhatsAppAction } from "./WhatsAppAction";
 
 import styles from "./Navbar.module.css";
 
@@ -191,7 +190,6 @@ export function MobileNavigation({
           </p>
 
           <div className={styles.overlayMeta}>
-            <WhatsAppAction />
             {socialLinks.map((item) => (
               <a
                 key={item.label}

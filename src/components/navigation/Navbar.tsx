@@ -10,7 +10,6 @@ import { DesktopNavigation } from "./DesktopNavigation";
 import { MobileMenuButton } from "./MobileMenuButton";
 import { MobileNavigation } from "./MobileNavigation";
 import { NavbarLogo } from "./NavbarLogo";
-import { WhatsAppAction } from "./WhatsAppAction";
 
 import styles from "./Navbar.module.css";
 
@@ -44,20 +43,19 @@ export function Navbar() {
         className={styles.header}
       >
         <Container width="wide" className={styles.shell}>
-          <div className={styles.grid}>
-            <div className={styles.brand}>
+          <div className={styles.navbarGrid}>
+            <div className={styles.logoArea}>
               <NavbarLogo onNavigate={() => setMenuOpen(false)} />
             </div>
 
             <nav
               aria-label="Ana navigasyon"
-              className={styles.desktopNav}
+              className={styles.desktopNavArea}
             >
               <DesktopNavigation />
             </nav>
 
-            <div className={styles.actions}>
-              <WhatsAppAction desktopOnly />
+            <div className={styles.balanceArea} aria-hidden="true">
               <MobileMenuButton
                 ref={menuButtonRef}
                 open={menuOpen}

@@ -15,7 +15,6 @@ type NavigationLinkProps = {
 };
 
 function isActivePath(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
   if (href.startsWith("/#")) return false;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
