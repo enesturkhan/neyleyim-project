@@ -3,6 +3,7 @@ export { Instruments } from "./components/instruments";
 export { Manifesto } from "./components/manifesto";
 export { ProgramsPreview } from "./components/programs-preview";
 export { Memories } from "./components/memories";
+export { FinalCTA } from "./components/final-cta";
 export { heroContent } from "./data/hero.data";
 export { audioAttributions } from "./data/audio-attributions.data";
 export { instruments, instrumentsIntro } from "./data/instruments.data";

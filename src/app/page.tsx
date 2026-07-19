@@ -1,3 +1,4 @@
+import { FinalCTA } from "@/features/home/components/final-cta";
 import { Hero } from "@/features/home/components/hero";
 import { Instruments } from "@/features/home/components/instruments";
 import { Manifesto } from "@/features/home/components/manifesto";
@@ -12,8 +13,7 @@ export default function Home() {
       <Instruments />
       <ProgramsPreview />
       <Memories />
-      {/* Anchor for navbar iletişim link — full section later */}
-      <div id="iletisim" className="sr-only" tabIndex={-1} />
+      <FinalCTA />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
+import { Footer } from "@/components/footer";
 import { SmoothScrollProvider } from "@/components/layout";
 import { Navbar } from "@/components/navigation";
 import { siteMetadata } from "@/data";
@@ -54,6 +55,7 @@ export default function RootLayout({
         <SmoothScrollProvider>
           <Navbar />
           {children}
+          <Footer />
         </SmoothScrollProvider>
       </body>
     </html>
