@@ -1,0 +1,85 @@
+/**
+ * Neyleyim design tokens
+ * Concept: “NEFESİN İZİNDE”
+ * Light-first: ivory, stone, sand, parchment, olive, muted bronze
+ */
+
+:root {
+  --background: #f3f0e8;
+  --background-soft: #e7e1d5;
+  --surface: #f8f5ee;
+  --surface-muted: #e7e1d5;
+  --foreground: #1f211c;
+  --foreground-soft: #666b63;
+  --muted-foreground: #666b63;
+  --accent: #a18e68;
+  --accent-soft: #cbbe9f;
+  --sage: #9eae91;
+  --olive: #5f7654;
+  --border: rgba(31, 33, 28, 0.12);
+
+  /* Intentional contrast sections only */
+  --dark-section: #1f211c;
+  --dark-section-foreground: #f3f0e8;
+
+  /* Legacy aliases kept in sync (no competing systems) */
+  --surface-soft: var(--surface-muted);
+
+  /* Layout */
+  --container-wide: 1600px;
+  --container-standard: 1280px;
+  --page-gutter-mobile: 20px;
+  --page-gutter-tablet: 32px;
+  --page-gutter-desktop: 64px;
+  --page-gutter: var(--page-gutter-mobile);
+  --navbar-height: 86px;
+  --navbar-height-scrolled: 72px;
+
+  /* Motion */
+  --ease-out-expressive: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+
+  /* Radius */
+  --radius: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+
+  /* shadcn / component bridge */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --primary: var(--olive);
+  --primary-foreground: var(--background);
+  --secondary: var(--background-soft);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--background-soft);
+  --accent-foreground: var(--background);
+  --destructive: #a85a4a;
+  --destructive-foreground: var(--background);
+  --input: var(--border);
+  --ring: var(--olive);
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--olive);
+  --sidebar-primary-foreground: var(--background);
+  --sidebar-accent: var(--background-soft);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--olive);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-gutter: var(--page-gutter-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-gutter: var(--page-gutter-desktop);
+  }
+}

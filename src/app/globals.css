@@ -1,26 +1,223 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *, .theme-dark *));
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-soft: var(--surface-soft);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-foreground-soft: var(--foreground-soft);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-sage: var(--sage);
+  --color-olive: var(--olive);
+  --color-border: var(--border);
+  --color-dark-section: var(--dark-section);
+  --color-dark-section-foreground: var(--dark-section-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100%;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .font-display {
+    font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  }
+
+  .display-hero {
+    font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+    font-size: clamp(3.25rem, 8vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+  }
+
+  .display-section {
+    font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+    font-size: clamp(2.125rem, 3.8vw, 3.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+
+  .heading-lg {
+    font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+    font-size: clamp(1.625rem, 2.2vw, 2.25rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .heading-md {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+  }
+
+  .body-lg {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: clamp(1.0625rem, 1.15vw, 1.1875rem);
+    line-height: 1.7;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+
+  .body-md {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+  }
+
+  .label {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter-mobile);
+  }
+
+  .container-standard {
+    width: 100%;
+    max-width: var(--container-standard);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter-mobile);
+  }
+
+  @media (min-width: 768px) {
+    .container-wide,
+    .container-standard {
+      padding-inline: var(--page-gutter-tablet);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-wide,
+    .container-standard {
+      padding-inline: var(--page-gutter-desktop);
+    }
+  }
+
+  /**
+   * Intentional dark contrast section.
+   * Use sparingly — never as the default page ground.
+   */
+  .theme-dark {
+    --background: var(--dark-section);
+    --surface: #2f332c;
+    --surface-muted: #3a3f37;
+    --surface-soft: var(--surface-muted);
+    --foreground: var(--dark-section-foreground);
+    --foreground-soft: #c5c2b8;
+    --muted-foreground: #a8a69c;
+    --accent: #cbbe9f;
+    --accent-soft: #9b8965;
+    --sage: #8a9080;
+    --border: rgba(243, 240, 232, 0.16);
+    --primary: var(--foreground);
+    --primary-foreground: var(--dark-section);
+    --card: var(--surface);
+    --card-foreground: var(--foreground);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
