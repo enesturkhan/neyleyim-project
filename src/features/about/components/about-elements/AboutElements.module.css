@@ -1,0 +1,196 @@
+.section {
+  position: relative;
+  z-index: 2;
+  padding-block: clamp(5.5rem, 12vw, 9rem);
+  background: #f3f0e8;
+  overflow: hidden;
+}
+
+.inner {
+  width: min(1440px, calc(100% - (2 * var(--page-gutter))));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(3.5rem, 8vw, 5.5rem);
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: minmax(280px, 0.85fr) minmax(520px, 1.15fr);
+    gap: clamp(4rem, 8vw, 8rem);
+  }
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  max-width: 28rem;
+}
+
+@media (min-width: 1024px) {
+  .introSticky {
+    position: sticky;
+    top: 22vh;
+  }
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #a18e68 72%, #5f7654 28%);
+}
+
+.title {
+  margin: 0;
+  margin-top: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2.75rem, 5.5vw, 4.75rem);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 0;
+  margin-top: clamp(1.35rem, 2.5vw, 1.85rem);
+  max-width: 28ch;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1rem, 1.1vw, 1.125rem);
+  line-height: 1.75;
+  color: var(--muted-foreground);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(31, 33, 28, 0.1);
+}
+
+.item {
+  border-bottom: 1px solid rgba(31, 33, 28, 0.1);
+}
+
+.itemInner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-block: clamp(2.25rem, 5.5vw, 3.75rem);
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 380ms ease;
+}
+
+.itemTitle {
+  margin: 0;
+  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  font-size: clamp(2.75rem, 5vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: color-mix(in srgb, #2a3028 88%, #5f7654);
+  opacity: 0.88;
+  transition:
+    opacity 380ms ease,
+    color 380ms ease,
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.itemDescription {
+  margin: 0;
+  max-width: 22rem;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
+  line-height: 1.7;
+  color: color-mix(in srgb, #3d4638 68%, #666b63);
+  opacity: 0.82;
+  transition: opacity 380ms ease, color 380ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .itemInner:hover .itemTitle,
+  .itemInner:focus-within .itemTitle {
+    opacity: 1;
+    color: #2a3028;
+    transform: translateX(4px);
+  }
+
+  .itemInner:hover .itemDescription,
+  .itemInner:focus-within .itemDescription {
+    opacity: 1;
+    color: color-mix(in srgb, #3d4638 82%, #666b63);
+  }
+
+  .item:hover,
+  .item:focus-within {
+    border-bottom-color: rgba(31, 33, 28, 0.22);
+  }
+}
+
+.reveal {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 767px) {
+  .intro {
+    align-items: center;
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .title {
+    max-width: 18rem;
+    margin-inline: auto;
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+  }
+
+  .lead {
+    max-width: 28ch;
+    margin-inline: auto;
+  }
+
+  .list {
+    width: 100%;
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+
+  .itemInner {
+    align-items: center;
+    text-align: center;
+    gap: 0.85rem;
+    padding-block: clamp(2rem, 7vw, 2.75rem);
+  }
+
+  .itemTitle {
+    font-size: clamp(2.35rem, 10vw, 3.5rem);
+  }
+
+  .itemDescription {
+    max-width: 24ch;
+    margin-inline: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .itemInner,
+  .itemTitle,
+  .itemDescription {
+    transition: none;
+  }
+
+  .reveal {
+    will-change: auto;
+  }
+}

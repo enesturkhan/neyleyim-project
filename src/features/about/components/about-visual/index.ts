@@ -1,0 +1,1 @@
+export { AboutVisual } from "./AboutVisual";

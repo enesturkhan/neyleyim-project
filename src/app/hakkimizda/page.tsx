@@ -1,22 +1,29 @@
 import type { Metadata } from "next";
 
-import { Container } from "@/components/layout";
+import { AboutCTA } from "@/features/about/components/about-cta";
+import { AboutElements } from "@/features/about/components/about-elements";
+import { AboutHero } from "@/features/about/components/about-hero";
+import { AboutJourney } from "@/features/about/components/about-journey";
+import { AboutManifesto } from "@/features/about/components/about-manifesto";
+import { AboutValues } from "@/features/about/components/about-values";
+import { AboutVisual } from "@/features/about/components/about-visual";
 
 export const metadata: Metadata = {
   title: "Hakkımızda",
+  description:
+    "Tasavvuf musikisini bugünün estetiğiyle yeniden yorumlayan Neyleyim topluluğunun hikâyesi.",
 };
 
 export default function HakkimizdaPage() {
   return (
-    <main className="flex flex-1 flex-col pt-[var(--navbar-height)]">
-      <Container width="standard" className="py-20 md:py-28">
-        <p className="label text-accent">Neyleyim</p>
-        <h1 className="heading-lg mt-4 text-foreground">Hakkımızda</h1>
-        <p className="body-lg mt-6 max-w-xl text-foreground-soft">
-          Bu sayfa yakında tamamlanacak. Topluluğun hikâyesi burada yer
-          alacak.
-        </p>
-      </Container>
+    <main className="flex flex-1 flex-col">
+      <AboutHero />
+      <AboutManifesto />
+      <AboutElements />
+      <AboutVisual />
+      <AboutValues />
+      <AboutJourney />
+      <AboutCTA />
     </main>
   );
 }
