@@ -1,8 +1,11 @@
+import {
+  InstagramIcon,
+  WhatsAppIcon,
+  YoutubeIcon,
+} from "@/components/icons";
+
 import type { FooterSocialIcon, FooterSocialLink } from "./footer.data";
 import { footerSocials } from "./footer.data";
-import { InstagramIcon } from "./InstagramIcon";
-import { WhatsAppIcon } from "./WhatsAppIcon";
-import { YoutubeIcon } from "./YoutubeIcon";
 
 import styles from "./Footer.module.css";
 

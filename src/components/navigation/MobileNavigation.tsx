@@ -3,13 +3,20 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import {
+  InstagramIcon,
+  WhatsAppIcon,
+  YoutubeIcon,
+} from "@/components/icons";
 import { useBodyScrollLock, useReducedMotion } from "@/hooks";
 import { prefersReducedMotion, registerGsap } from "@/lib/animations";
 
 import {
   brand,
   mainNavigation,
-  socialLinks,
+  mobileSocialLinks,
+  mobileWhatsAppContact,
+  type MobileSocialItem,
 } from "./navigation.config";
 
 import styles from "./Navbar.module.css";
@@ -26,11 +33,26 @@ const FOCUSABLE =
 
 const INTERACT_DELAY_MS = 400;
 
+function isActiveHref(href: string | null): href is string {
+  return typeof href === "string" && href.trim().length > 0 && href !== "#";
+}
+
+function SocialGlyph({
+  icon,
+  className,
+}: {
+  icon: MobileSocialItem["icon"];
+  className?: string;
+}) {
+  if (icon === "instagram") return <InstagramIcon className={className} />;
+  return <YoutubeIcon className={className} />;
+}
+
 function resetClosedStyles(
   gsap: ReturnType<typeof registerGsap>,
   panel: HTMLElement,
   links: NodeListOf<HTMLElement>,
-  footer: HTMLElement | null,
+  reveals: NodeListOf<HTMLElement>,
 ) {
   gsap.set(panel, {
     opacity: 0,
@@ -39,7 +61,7 @@ function resetClosedStyles(
   });
   // GSAP exclusively owns link transforms (no CSS transform on .overlayLink).
   gsap.set(links, { yPercent: 110 });
-  gsap.set(footer, { opacity: 0, y: 0, clearProps: "transform" });
+  gsap.set(reveals, { opacity: 0, y: 0, clearProps: "transform" });
   panel.removeAttribute("data-interactive");
 }
 
@@ -47,12 +69,12 @@ function applyOpenStyles(
   gsap: ReturnType<typeof registerGsap>,
   panel: HTMLElement,
   links: NodeListOf<HTMLElement>,
-  footer: HTMLElement | null,
+  reveals: NodeListOf<HTMLElement>,
 ) {
   // Drop inline GSAP hides so CSS [data-open="true"] can keep the panel visible.
   gsap.set(panel, { clearProps: "opacity,transform,visibility" });
   gsap.set(links, { clearProps: "transform" });
-  gsap.set(footer, { clearProps: "opacity,transform" });
+  gsap.set(reveals, { clearProps: "opacity,transform" });
 }
 
 export function MobileNavigation({
@@ -89,21 +111,23 @@ export function MobileNavigation({
 
     const gsap = registerGsap();
     const links = panel.querySelectorAll<HTMLElement>(`.${styles.overlayLink}`);
-    const footer = panel.querySelector<HTMLElement>(`.${styles.overlayFooter}`);
+    const reveals = panel.querySelectorAll<HTMLElement>(
+      `[data-overlay-reveal]`,
+    );
     const reduced = prefersReducedMotion() || reducedMotion;
     const hasOpened = panel.dataset.hasOpened === "true";
 
     if (!open && !hasOpened) {
-      resetClosedStyles(gsap, panel, links, footer);
+      resetClosedStyles(gsap, panel, links, reveals);
       return;
     }
 
     if (reduced) {
       if (open) {
         panel.dataset.hasOpened = "true";
-        applyOpenStyles(gsap, panel, links, footer);
+        applyOpenStyles(gsap, panel, links, reveals);
       } else {
-        resetClosedStyles(gsap, panel, links, footer);
+        resetClosedStyles(gsap, panel, links, reveals);
       }
       return;
     }
@@ -118,15 +142,15 @@ export function MobileNavigation({
 
       gsap.set(panel, { opacity: 0, yPercent: -8 });
       gsap.set(links, { yPercent: 110 });
-      gsap.set(footer, { opacity: 0, y: 12 });
+      gsap.set(reveals, { opacity: 0, y: 12 });
 
       const safetyTimer = window.setTimeout(() => {
-        applyOpenStyles(gsap, panel, links, footer);
+        applyOpenStyles(gsap, panel, links, reveals);
       }, 850);
 
       timeline.eventCallback("onComplete", () => {
         window.clearTimeout(safetyTimer);
-        applyOpenStyles(gsap, panel, links, footer);
+        applyOpenStyles(gsap, panel, links, reveals);
       });
 
       timeline
@@ -145,9 +169,9 @@ export function MobileNavigation({
           0.18,
         )
         .to(
-          footer,
-          { opacity: 1, y: 0, duration: 0.5 },
-          0.48,
+          reveals,
+          { opacity: 1, y: 0, duration: 0.48, stagger: 0.08 },
+          0.42,
         );
 
       return () => {
@@ -156,14 +180,14 @@ export function MobileNavigation({
         // If React remounts the effect while still open, do not leave
         // inline opacity:0 / yPercent:110 that keep the panel invisible.
         if (panel.getAttribute("data-open") === "true") {
-          applyOpenStyles(gsap, panel, links, footer);
+          applyOpenStyles(gsap, panel, links, reveals);
         }
       };
     }
 
     panel.removeAttribute("data-interactive");
     timeline
-      .to(footer, { opacity: 0, duration: 0.25 }, 0)
+      .to(reveals, { opacity: 0, duration: 0.22, stagger: 0.03 }, 0)
       .to(links, { yPercent: 100, duration: 0.35, stagger: 0.03 }, 0)
       .to(
         panel,
@@ -172,7 +196,7 @@ export function MobileNavigation({
           yPercent: -4,
           duration: 0.5,
           onComplete: () => {
-            resetClosedStyles(gsap, panel, links, footer);
+            resetClosedStyles(gsap, panel, links, reveals);
           },
         },
         0.05,
@@ -240,6 +264,10 @@ export function MobileNavigation({
     };
   }, [open, onClose, reducedMotion, triggerRef]);
 
+  const whatsappHref = mobileWhatsAppContact.href;
+  const whatsappInteractive = isActiveHref(whatsappHref);
+  const tabIndex = open && linksEnabled ? 0 : -1;
+
   return (
     <div
       ref={panelRef}
@@ -256,28 +284,28 @@ export function MobileNavigation({
       <div className={styles.overlayCanes} aria-hidden />
 
       <div className={styles.overlayInner}>
-        <nav aria-label="Mobil navigasyon">
-          <ul className={styles.overlayNav}>
-            {mainNavigation.map((item, index) => (
-              <li key={item.href} className={styles.overlayItem}>
-                <Link
-                  href={item.href}
-                  onClick={onClose}
-                  tabIndex={open && linksEnabled ? 0 : -1}
-                  className={styles.overlayLink}
-                >
-                  <span className={styles.overlayIndex}>
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className={styles.overlayLabel}>{item.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className={styles.overlayContent}>
+          <nav aria-label="Mobil navigasyon">
+            <ul className={styles.overlayNav}>
+              {mainNavigation.map((item) => (
+                <li key={item.href} className={styles.overlayItem}>
+                  <Link
+                    href={item.href}
+                    onClick={onClose}
+                    tabIndex={tabIndex}
+                    className={styles.overlayLink}
+                  >
+                    <span className={styles.overlayLabel}>{item.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className={styles.overlayFooter}>
-          <p className={styles.overlayStatement}>
+          <p
+            data-overlay-reveal="statement"
+            className={styles.overlayStatement}
+          >
             {brand.statement.map((line) => (
               <span key={line} className="block">
                 {line}
@@ -285,20 +313,75 @@ export function MobileNavigation({
             ))}
           </p>
 
-          <div className={styles.overlayMeta}>
-            {socialLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                tabIndex={open && linksEnabled ? 0 : -1}
-                className={styles.socialLink}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
+          <ul
+            data-overlay-reveal="socials"
+            className={styles.overlaySocials}
+            aria-label="Sosyal medya"
+          >
+            {mobileSocialLinks.map((item) => {
+              const icon = (
+                <SocialGlyph
+                  icon={item.icon}
+                  className={styles.overlaySocialIcon}
+                />
+              );
+
+              if (isActiveHref(item.href)) {
+                return (
+                  <li key={item.icon}>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      tabIndex={tabIndex}
+                      className={styles.overlaySocialLink}
+                      aria-label={item.ariaLabel}
+                    >
+                      {icon}
+                    </a>
+                  </li>
+                );
+              }
+
+              return (
+                <li key={item.icon}>
+                  <span
+                    className={`${styles.overlaySocialLink} ${styles.overlaySocialPending}`}
+                    aria-disabled="true"
+                    aria-label={item.ariaLabel}
+                  >
+                    {icon}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+
+          {whatsappInteractive ? (
+            <a
+              data-overlay-reveal="contact"
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={tabIndex}
+              className={styles.overlayWhatsApp}
+              aria-label={mobileWhatsAppContact.ariaLabel}
+              onClick={onClose}
+            >
+              <WhatsAppIcon className={styles.overlayWhatsAppIcon} />
+              <span>{mobileWhatsAppContact.label}</span>
+            </a>
+          ) : (
+            <span
+              data-overlay-reveal="contact"
+              className={`${styles.overlayWhatsApp} ${styles.overlayWhatsAppPending}`}
+              aria-disabled="true"
+              aria-label={mobileWhatsAppContact.ariaLabel}
+            >
+              <WhatsAppIcon className={styles.overlayWhatsAppIcon} />
+              <span>{mobileWhatsAppContact.label}</span>
+            </span>
+          )}
         </div>
       </div>
     </div>

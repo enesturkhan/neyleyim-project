@@ -7,7 +7,12 @@ export { NavigationLink } from "./NavigationLink";
 export {
   brand,
   mainNavigation,
-  socialLinks,
+  mobileSocialLinks,
+  mobileWhatsAppContact,
   WHATSAPP_URL,
+} from "./navigation.config";
+export type {
+  MobileContactItem,
+  MobileSocialItem,
 } from "./navigation.config";
 export { WhatsAppAction } from "./WhatsAppAction";
