@@ -76,6 +76,20 @@
   height: 0.85em;
 }
 
+@media (max-width: 767px) {
+  .header {
+    align-items: center;
+    max-width: none;
+    margin-inline: auto;
+    margin-bottom: clamp(3.5rem, 9vw, 5.5rem);
+    text-align: center;
+  }
+
+  .lead {
+    margin-inline: auto;
+  }
+}
+
 /* ——— List ——— */
 
 .list {

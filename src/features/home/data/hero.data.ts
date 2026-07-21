@@ -99,7 +99,7 @@ export const canesMobile: CaneConfig[] = [
   { id: "m06", x: 72, width: 92, rotate: -10, height: 156, top: -22, opacity: 0.4, activeOpacity: 0.98, holes: [14, 30, 46, 62], zone: "right" },
   { id: "m07", x: 82, width: 58, rotate: -12, height: 148, top: -17, opacity: 0.36, activeOpacity: 0.94, holes: [22, 42, 60], zone: "right" },
   { id: "m08", x: 92, width: 80, rotate: -9, height: 152, top: -20, opacity: 0.38, activeOpacity: 0.96, holes: [16, 34, 52], zone: "right" },
-  { id: "m09", x: 102, width: 60, rotate: -11, height: 146, top: -16, opacity: 0.34, activeOpacity: 0.9, holes: [20, 40], zone: "right" },
+  { id: "m09", x: 96, width: 60, rotate: -11, height: 146, top: -16, opacity: 0.34, activeOpacity: 0.9, holes: [20, 40], zone: "right" },
 ];
 
 export const INTERACTION_RADIUS_DESKTOP = 680;

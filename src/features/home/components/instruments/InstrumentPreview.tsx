@@ -1,7 +1,7 @@
 "use client";
 
 import { Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { useMediaQuery } from "@/hooks";
 import { prefersReducedMotion, registerGsap } from "@/lib/animations";
@@ -15,9 +15,14 @@ import styles from "./Instruments.module.css";
 type InstrumentPreviewProps = {
   active: Instrument;
   previewId: string;
+  children?: ReactNode;
 };
 
-export function InstrumentPreview({ active, previewId }: InstrumentPreviewProps) {
+export function InstrumentPreview({
+  active,
+  previewId,
+  children,
+}: InstrumentPreviewProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const activeIdRef = useRef(active.id);
@@ -206,6 +211,8 @@ export function InstrumentPreview({ active, previewId }: InstrumentPreviewProps)
           Ses dosyası henüz eklenmedi
         </p>
       ) : null}
+
+      {children}
     </div>
   );
 }

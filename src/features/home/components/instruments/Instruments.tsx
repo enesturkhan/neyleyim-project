@@ -181,15 +181,6 @@ export function Instruments() {
             ))}
           </p>
 
-          <div data-instruments-reveal>
-            <InstrumentList
-              activeId={activeId}
-              onSelect={selectInstrument}
-              listId={listId}
-              previewId={previewId}
-            />
-          </div>
-
           <div ref={detailRef} className={styles.detail}>
             <p data-instrument-copy className={styles.detailSubtitle}>
               {active.subtitle}
@@ -200,8 +191,15 @@ export function Instruments() {
           </div>
         </div>
 
-        <div data-instruments-reveal>
-          <InstrumentPreview active={active} previewId={previewId} />
+        <div data-instruments-reveal className={styles.visualColumn}>
+          <InstrumentPreview active={active} previewId={previewId}>
+            <InstrumentList
+              activeId={activeId}
+              onSelect={selectInstrument}
+              listId={listId}
+              previewId={previewId}
+            />
+          </InstrumentPreview>
         </div>
       </div>
     </section>

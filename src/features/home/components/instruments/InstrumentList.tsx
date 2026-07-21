@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 import { instruments, type Instrument } from "../../data/instruments.data";
 
 import styles from "./Instruments.module.css";
@@ -15,11 +19,33 @@ export function InstrumentList({
   listId,
   previewId,
 }: InstrumentListProps) {
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+
+    const activeButton = list.querySelector<HTMLButtonElement>(
+      `[data-instrument-id="${activeId}"]`,
+    );
+    activeButton?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [activeId]);
+
   return (
-    <ul id={listId} className={styles.list} role="listbox" aria-label="Enstrümanlar">
+    <ul
+      ref={listRef}
+      id={listId}
+      className={styles.list}
+      role="listbox"
+      aria-label="Enstrümanlar"
+    >
       {instruments.map((instrument) => {
         const isActive = instrument.id === activeId;
-        const indexLabel = String(instrument.index).padStart(2, "0");
 
         return (
           <li key={instrument.id} className={styles.listItem} role="none">
@@ -35,7 +61,6 @@ export function InstrumentList({
               onMouseEnter={() => onSelect(instrument.id)}
               onFocus={() => onSelect(instrument.id)}
             >
-              <span className={styles.index}>{indexLabel}</span>
               <span className={styles.name}>{instrument.title}</span>
             </button>
           </li>

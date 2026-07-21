@@ -186,6 +186,7 @@
     display: flex;
     flex-direction: column;
     height: auto;
+    --hero-overflow: 110px;
     min-height: calc(100svh + var(--hero-overflow));
   }
 
@@ -201,11 +202,31 @@
     position: relative;
     left: auto;
     bottom: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    max-width: none;
+    max-width: 26rem;
     margin-top: auto;
-    padding-top: calc(var(--navbar-height) + 1.5rem);
-    padding-bottom: 2.5rem;
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+    padding-top: calc(var(--navbar-height) + 1.25rem);
+    padding-bottom: 2.25rem;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .description {
+    margin-inline: auto;
+  }
+
+  .ctaRow {
+    justify-content: center;
+    gap: 1.15rem 1.5rem;
+  }
+
+  .secondaryCta {
+    min-height: 44px;
   }
 }
 
@@ -463,11 +484,17 @@
 
 @media (max-width: 767px) {
   .title {
-    font-size: clamp(4.25rem, 18vw, 6.5rem);
+    font-size: clamp(3.15rem, 13.5vw, 4.6rem);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
   }
 
   .statement {
-    font-size: clamp(1.65rem, 6.5vw, 2.25rem);
+    font-size: clamp(1.5rem, 5.8vw, 2.1rem);
+  }
+
+  .description {
+    max-width: 34ch;
   }
 }
 

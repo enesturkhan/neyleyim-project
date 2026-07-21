@@ -42,16 +42,39 @@
 
 @media (min-width: 768px) {
   .inner {
-    grid-template-columns: 45% 55%;
+    grid-template-columns: minmax(16rem, 0.9fr) minmax(0, 1.35fr);
     gap: clamp(2rem, 4vw, 3.5rem);
   }
 }
 
 @media (min-width: 1024px) {
   .inner {
-    grid-template-columns: 40% 60%;
+    grid-template-columns: minmax(18rem, 0.82fr) minmax(0, 1.5fr);
     gap: 4rem;
   }
+}
+
+@media (max-width: 767px) {
+  .copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .lead,
+  .detailDescription {
+    margin-inline: auto;
+  }
+
+  .detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.visualColumn {
+  min-width: 0;
+  width: 100%;
 }
 
 /* ——— Left column ——— */
@@ -94,54 +117,66 @@
 }
 
 .list {
+  position: absolute;
+  z-index: 4;
+  left: clamp(1.25rem, 2.5vw, 2.5rem);
+  right: clamp(1.25rem, 2.5vw, 2.5rem);
+  bottom: 0;
   display: flex;
-  gap: 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  height: var(--instrument-selector-height);
   margin: 0;
-  margin-top: clamp(2.5rem, 5vw, 3.75rem);
   padding: 0;
   list-style: none;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.list::-webkit-scrollbar {
-  display: none;
-}
-
-@media (min-width: 768px) {
-  .list {
-    flex-direction: column;
-    gap: 0.35rem;
-    overflow: visible;
-    scroll-snap-type: none;
-  }
+  background: linear-gradient(
+    to top,
+    rgba(31, 33, 28, 0.08) 0%,
+    rgba(31, 33, 28, 0) 100%
+  );
+  pointer-events: none;
 }
 
 .listItem {
   flex: 0 0 auto;
-  scroll-snap-align: start;
+  pointer-events: auto;
 }
 
 .listButton {
+  position: relative;
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.85rem;
-  padding: 0.55rem 0.15rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.55rem 0.2rem;
   border: 0;
   background: transparent;
-  color: rgba(31, 33, 28, 0.38);
+  color: #2f352c;
+  opacity: 0.52;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   outline: none;
   transition:
     color 0.35s ease,
+    opacity 0.35s ease,
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.listButton::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0.35rem;
+  width: 0;
+  height: 1px;
+  background: color-mix(in srgb, #3d4638 78%, #5f7654);
+  transform: translateX(-50%);
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .listButton:hover {
-  color: rgba(31, 33, 28, 0.62);
+  opacity: 0.78;
 }
 
 .listButton:focus-visible {
@@ -150,36 +185,55 @@
 }
 
 .listButtonActive {
-  color: #1f211c;
+  color: #2a3028;
+  opacity: 1;
+  transform: translateY(-2px);
 }
 
-.index {
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  transition: font-size 0.35s ease;
+.listButtonActive::after {
+  width: 100%;
 }
 
 .name {
-  font-family: var(--font-instrument-serif), ui-serif, Georgia, serif;
-  font-size: clamp(1.5rem, 2.4vw, 1.85rem);
-  font-weight: 400;
-  letter-spacing: -0.02em;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
   line-height: 1;
-  transition: font-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.listButtonActive .index {
-  color: var(--instrument-accent);
+@media (min-width: 768px) {
+  .name {
+    font-size: clamp(0.8rem, 1vw, 0.95rem);
+  }
 }
 
-.listButtonActive .name {
-  font-size: clamp(2.25rem, 4vw, 3.25rem);
+@media (max-width: 767px) {
+  .list {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: flex-start;
+    gap: 1.35rem;
+    padding-inline: var(--page-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-gutter);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .listItem {
+    scroll-snap-align: center;
+  }
 }
 
 .detail {
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  margin-top: clamp(2rem, 4vw, 3rem);
   min-height: 7.5rem;
 }
 
@@ -206,6 +260,8 @@
 /* ——— Right column / preview ——— */
 
 .preview {
+  --instrument-selector-height: 3.25rem;
+
   position: relative;
   min-height: clamp(22rem, 48vw, 36rem);
   width: 100%;
@@ -222,7 +278,7 @@
 
 .previewStage {
   position: absolute;
-  inset: 0;
+  inset: 0 0 var(--instrument-selector-height) 0;
   overflow: visible;
   background: transparent;
   mask-image: linear-gradient(
@@ -279,8 +335,8 @@
 
 .audioControl {
   position: absolute;
+  top: 0.75rem;
   right: 0.25rem;
-  bottom: 0.75rem;
   z-index: 3;
   display: inline-flex;
   align-items: center;
@@ -316,8 +372,8 @@
 
 .audioHint {
   position: absolute;
+  top: 3.1rem;
   left: 0.25rem;
-  bottom: 0.85rem;
   z-index: 3;
   margin: 0;
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -501,8 +557,7 @@
   }
 
   .listButton,
-  .name,
-  .index {
+  .listButton::after {
     transition: none;
   }
 

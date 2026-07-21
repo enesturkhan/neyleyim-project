@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useBodyScrollLock, useReducedMotion } from "@/hooks";
 import { prefersReducedMotion, registerGsap } from "@/lib/animations";
@@ -24,6 +24,37 @@ type MobileNavigationProps = {
 const FOCUSABLE =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+const INTERACT_DELAY_MS = 400;
+
+function resetClosedStyles(
+  gsap: ReturnType<typeof registerGsap>,
+  panel: HTMLElement,
+  links: NodeListOf<HTMLElement>,
+  footer: HTMLElement | null,
+) {
+  gsap.set(panel, {
+    opacity: 0,
+    yPercent: 0,
+    clearProps: "transform,visibility",
+  });
+  // GSAP exclusively owns link transforms (no CSS transform on .overlayLink).
+  gsap.set(links, { yPercent: 110 });
+  gsap.set(footer, { opacity: 0, y: 0, clearProps: "transform" });
+  panel.removeAttribute("data-interactive");
+}
+
+function applyOpenStyles(
+  gsap: ReturnType<typeof registerGsap>,
+  panel: HTMLElement,
+  links: NodeListOf<HTMLElement>,
+  footer: HTMLElement | null,
+) {
+  // Drop inline GSAP hides so CSS [data-open="true"] can keep the panel visible.
+  gsap.set(panel, { clearProps: "opacity,transform,visibility" });
+  gsap.set(links, { clearProps: "transform" });
+  gsap.set(footer, { clearProps: "opacity,transform" });
+}
+
 export function MobileNavigation({
   open,
   onClose,
@@ -32,8 +63,25 @@ export function MobileNavigation({
 }: MobileNavigationProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  const [linksEnabled, setLinksEnabled] = useState(false);
 
   useBodyScrollLock(open);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const panel = panelRef.current;
+    const timer = window.setTimeout(() => {
+      setLinksEnabled(true);
+      panel?.setAttribute("data-interactive", "true");
+    }, INTERACT_DELAY_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+      setLinksEnabled(false);
+      panel?.removeAttribute("data-interactive");
+    };
+  }, [open]);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -46,20 +94,17 @@ export function MobileNavigation({
     const hasOpened = panel.dataset.hasOpened === "true";
 
     if (!open && !hasOpened) {
-      gsap.set(panel, { autoAlpha: 0, yPercent: -8 });
-      gsap.set(links, { yPercent: 110 });
-      gsap.set(footer, { autoAlpha: 0 });
+      resetClosedStyles(gsap, panel, links, footer);
       return;
     }
 
     if (reduced) {
-      gsap.set(panel, {
-        autoAlpha: open ? 1 : 0,
-        yPercent: 0,
-      });
-      gsap.set(links, { yPercent: open ? 0 : 110 });
-      gsap.set(footer, { autoAlpha: open ? 1 : 0 });
-      if (open) panel.dataset.hasOpened = "true";
+      if (open) {
+        panel.dataset.hasOpened = "true";
+        applyOpenStyles(gsap, panel, links, footer);
+      } else {
+        resetClosedStyles(gsap, panel, links, footer);
+      }
       return;
     }
 
@@ -69,31 +114,69 @@ export function MobileNavigation({
 
     if (open) {
       panel.dataset.hasOpened = "true";
+      panel.removeAttribute("data-interactive");
+
+      gsap.set(panel, { opacity: 0, yPercent: -8 });
+      gsap.set(links, { yPercent: 110 });
+      gsap.set(footer, { opacity: 0, y: 12 });
+
+      const safetyTimer = window.setTimeout(() => {
+        applyOpenStyles(gsap, panel, links, footer);
+      }, 850);
+
+      timeline.eventCallback("onComplete", () => {
+        window.clearTimeout(safetyTimer);
+        applyOpenStyles(gsap, panel, links, footer);
+      });
+
       timeline
-        .fromTo(
+        .to(
           panel,
-          { autoAlpha: 0, yPercent: -8 },
-          { autoAlpha: 1, yPercent: 0, duration: 0.78 },
+          {
+            opacity: 1,
+            yPercent: 0,
+            duration: 0.78,
+          },
           0,
         )
-        .fromTo(
+        .to(
           links,
-          { yPercent: 110 },
           { yPercent: 0, duration: 0.72, stagger: 0.07 },
           0.18,
         )
-        .fromTo(
+        .to(
           footer,
-          { autoAlpha: 0, y: 12 },
-          { autoAlpha: 1, y: 0, duration: 0.5 },
+          { opacity: 1, y: 0, duration: 0.5 },
           0.48,
         );
-    } else {
-      timeline
-        .to(footer, { autoAlpha: 0, duration: 0.25 }, 0)
-        .to(links, { yPercent: 100, duration: 0.35, stagger: 0.03 }, 0)
-        .to(panel, { autoAlpha: 0, yPercent: -4, duration: 0.5 }, 0.05);
+
+      return () => {
+        window.clearTimeout(safetyTimer);
+        timeline.kill();
+        // If React remounts the effect while still open, do not leave
+        // inline opacity:0 / yPercent:110 that keep the panel invisible.
+        if (panel.getAttribute("data-open") === "true") {
+          applyOpenStyles(gsap, panel, links, footer);
+        }
+      };
     }
+
+    panel.removeAttribute("data-interactive");
+    timeline
+      .to(footer, { opacity: 0, duration: 0.25 }, 0)
+      .to(links, { yPercent: 100, duration: 0.35, stagger: 0.03 }, 0)
+      .to(
+        panel,
+        {
+          opacity: 0,
+          yPercent: -4,
+          duration: 0.5,
+          onComplete: () => {
+            resetClosedStyles(gsap, panel, links, footer);
+          },
+        },
+        0.05,
+      );
 
     return () => {
       timeline.kill();
@@ -107,15 +190,12 @@ export function MobileNavigation({
     const trigger = triggerRef.current;
     if (!panel) return;
 
-    const focusables = Array.from(
-      panel.querySelectorAll<HTMLElement>(FOCUSABLE),
-    );
-    const first = focusables[0];
-    const last = focusables[focusables.length - 1];
-
+    // Focus the dialog itself — never autofocus the first nav link.
+    // On mobile, focusing /hakkimizda during the opening tap can make the
+    // residual click activate that Link and navigate away immediately.
     const focusTimer = window.setTimeout(() => {
-      first?.focus();
-    }, reducedMotion ? 0 : 80);
+      panel.focus({ preventScroll: true });
+    }, reducedMotion ? 0 : 50);
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -124,14 +204,28 @@ export function MobileNavigation({
         return;
       }
 
-      if (event.key !== "Tab" || focusables.length === 0) return;
+      if (event.key !== "Tab") return;
+
+      const focusables = Array.from(
+        panel.querySelectorAll<HTMLElement>(FOCUSABLE),
+      ).filter((el) => el.tabIndex !== -1 && !el.hasAttribute("disabled"));
+
+      if (focusables.length === 0) {
+        event.preventDefault();
+        panel.focus({ preventScroll: true });
+        return;
+      }
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
 
       if (event.shiftKey) {
-        if (document.activeElement === first) {
+        if (active === first || active === panel) {
           event.preventDefault();
           last?.focus();
         }
-      } else if (document.activeElement === last) {
+      } else if (active === last) {
         event.preventDefault();
         first?.focus();
       }
@@ -142,7 +236,7 @@ export function MobileNavigation({
     return () => {
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
-      trigger?.focus();
+      trigger?.focus({ preventScroll: true });
     };
   }, [open, onClose, reducedMotion, triggerRef]);
 
@@ -156,6 +250,8 @@ export function MobileNavigation({
       data-open={open ? "true" : "false"}
       className={styles.overlay}
       aria-hidden={!open}
+      inert={!open ? true : undefined}
+      tabIndex={open ? -1 : undefined}
     >
       <div className={styles.overlayCanes} aria-hidden />
 
@@ -167,7 +263,7 @@ export function MobileNavigation({
                 <Link
                   href={item.href}
                   onClick={onClose}
-                  tabIndex={open ? 0 : -1}
+                  tabIndex={open && linksEnabled ? 0 : -1}
                   className={styles.overlayLink}
                 >
                   <span className={styles.overlayIndex}>
@@ -196,7 +292,7 @@ export function MobileNavigation({
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                tabIndex={open ? 0 : -1}
+                tabIndex={open && linksEnabled ? 0 : -1}
                 className={styles.socialLink}
               >
                 {item.label}

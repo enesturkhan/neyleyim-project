@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { Container } from "@/components/layout";
@@ -13,18 +13,40 @@ import { NavbarLogo } from "./NavbarLogo";
 
 import styles from "./Navbar.module.css";
 
+const DESKTOP_NAV_MIN = 1024;
+
 export function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const [menuPathname, setMenuPathname] = useState(pathname);
+  const [menuPathname, setMenuPathname] = useState<string | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
   const panelId = `mobile-navigation-${menuId}`;
 
-  if (pathname !== menuPathname) {
-    setMenuPathname(pathname);
-    if (menuOpen) setMenuOpen(false);
-  }
+  // Open only while the menu pathname still matches the current route.
+  // Route changes close the menu without render-time setState.
+  const menuOpen = menuPathname === pathname;
+
+  const closeMenu = () => setMenuPathname(null);
+
+  const toggleMenu = () => {
+    setMenuPathname((current) => (current === pathname ? null : pathname));
+  };
+
+  useEffect(() => {
+    const media = window.matchMedia(`(min-width: ${DESKTOP_NAV_MIN}px)`);
+
+    const onViewportChange = () => {
+      if (media.matches) {
+        setMenuPathname(null);
+      }
+    };
+
+    media.addEventListener("change", onViewportChange);
+
+    return () => {
+      media.removeEventListener("change", onViewportChange);
+    };
+  }, []);
 
   const { scrolled, hidden } = useScrollDirection({
     scrolledThreshold: 48,
@@ -45,7 +67,7 @@ export function Navbar() {
         <Container width="wide" className={styles.shell}>
           <div className={styles.navbarGrid}>
             <div className={styles.logoArea}>
-              <NavbarLogo onNavigate={() => setMenuOpen(false)} />
+              <NavbarLogo onNavigate={closeMenu} />
             </div>
 
             <nav
@@ -55,11 +77,11 @@ export function Navbar() {
               <DesktopNavigation />
             </nav>
 
-            <div className={styles.balanceArea} aria-hidden="true">
+            <div className={styles.balanceArea}>
               <MobileMenuButton
                 ref={menuButtonRef}
                 open={menuOpen}
-                onClick={() => setMenuOpen((value) => !value)}
+                onClick={toggleMenu}
                 controlsId={panelId}
               />
             </div>
@@ -70,7 +92,7 @@ export function Navbar() {
       <MobileNavigation
         id={panelId}
         open={menuOpen}
-        onClose={() => setMenuOpen(false)}
+        onClose={closeMenu}
         triggerRef={menuButtonRef}
       />
     </>

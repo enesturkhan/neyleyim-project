@@ -89,6 +89,23 @@
   color: var(--muted-foreground);
 }
 
+@media (max-width: 767px) {
+  .header {
+    align-items: center;
+    max-width: none;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .lead {
+    margin-inline: auto;
+  }
+
+  .cta {
+    margin-inline: auto;
+  }
+}
+
 .cta {
   position: relative;
   display: inline-flex;
